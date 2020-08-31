@@ -6,22 +6,24 @@ SetWorkingDir %A_ScriptDir%
 start:
 Run, rsrc\task.bat, %A_ScriptDir%
 sleep 1000
+ScriptQuotes := A_ScriptFullPath
+ScriptQuotes = \"%ScriptQuotes%\"
+ScriptFile = SplitPath, A_ScriptFullPath, , , , ScriptNameNoExt
 IfExist, notask
 	{
-	ScriptQuotes := A_ScriptFullPath
-	ScriptQuotes = \"%ScriptQuotes%\"
-	Run *RunAs schtasks.exe /Create /SC onlogon /TN AutostartV1 /TR "%ScriptQuotes%"
+	Run *RunAs schtasks.exe /Create /SC onlogon /TN SWAS /TR "%ScriptQuotes%"
 	FIleDelete, notask
 	}
-IfNotExist, Autostart.ini
+	
+IfNotExist, %ScriptNameNoExt%.ini
 	{
-	IniWrite, 3, Autostart.ini, Config, DefaultPreDelay
-	IniWrite, 3, Autostart.ini, Config, DefaultPostDelay
-	IniWrite, 0, Autostart.ini, Config, DefaultAdminElevate
+	IniWrite, 3, %ScriptNameNoExt%.ini, Config, DefaultPreDelay
+	IniWrite, 3, %ScriptNameNoExt%.ini, Config, DefaultPostDelay
+	IniWrite, 0, %ScriptNameNoExt%.ini, Config, DefaultAdminElevate
 	}
-IniRead, DefPre, Autostart.ini, Config, DefaultPreDelay
-IniRead, DefPost, Autostart.ini, Config, DefaultPostDelay
-IniRead, DefElevate, Autostart.ini, Config, DefaultAdminElevate
+IniRead, DefPre, %ScriptNameNoExt%.ini, Config, DefaultPreDelay
+IniRead, DefPost, %ScriptNameNoExt%.ini, Config, DefaultPostDelay
+IniRead, DefElevate, %ScriptNameNoExt%.ini, Config, DefaultAdminElevate
 loop, files, starters\*.lnk
 	{
 	FileGetShortcut, %A_LoopFilePath% , OutTarget, OutDir, OutArgs, OutDescription, OutIcon, OutIconNum, OutRunState
