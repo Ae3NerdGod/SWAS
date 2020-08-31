@@ -1,5 +1,4 @@
-﻿
-#SingleInstance Force
+﻿#SingleInstance Force
 #NoEnv
 SendMode Input
 SetWorkingDir %A_ScriptDir%
@@ -8,13 +7,17 @@ Run, rsrc\task.bat, %A_ScriptDir%
 sleep 1000
 ScriptQuotes := A_ScriptFullPath
 ScriptQuotes = \"%ScriptQuotes%\"
-ScriptFile = SplitPath, A_ScriptFullPath, , , , ScriptNameNoExt
+SplitPath, A_ScriptFullPath, , , , ScriptNameNoExt
 IfExist, notask
 	{
+	nostart=1
 	Run *RunAs schtasks.exe /Create /SC onlogon /TN SWAS /TR "%ScriptQuotes%"
 	FIleDelete, notask
 	}
-	
+IfNotExist, %A_ScriptDir%\starters
+	{
+			filecreatedir, %A_ScriptDir%\starters
+	}
 IfNotExist, %ScriptNameNoExt%.ini
 	{
 	IniWrite, 3, %ScriptNameNoExt%.ini, Config, DefaultPreDelay
